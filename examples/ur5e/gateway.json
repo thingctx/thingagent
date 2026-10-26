@@ -1,0 +1,21 @@
+{
+ "broker": "127.0.0.1:1887",
+ "prefix": "tc",
+ "things": [
+  "things/ur5e.td.json"
+ ],
+ "login": {
+  "user": "fleet_gw",
+  "password_env": "FLEET_GW_PASSWORD"
+ },
+ "guard": {
+  "issuers": [
+   "https://issuer.example.com"
+  ],
+  "audience": "api://fleet",
+  "jwks": "keys/jwks.json"
+ },
+ "grants": "policy/grants.json",
+ "timeout": 90,
+ "trace": "record/gateway.jsonl"
+}

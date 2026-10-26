@@ -1,0 +1,32 @@
+{
+ "broker": "127.0.0.1:1887",
+ "prefix": "tc",
+ "guard": {
+  "issuers": [
+   "https://issuer.example.com"
+  ],
+  "audience": "api://fleet",
+  "jwks": "keys/jwks.json"
+ },
+ "broker_binds_identity": true,
+ "login": {
+  "user": "agents_gw",
+  "password_env": "AGENTS_GW_PASSWORD"
+ },
+ "policy": {},
+ "fleet": "bus",
+ "agents": [
+  "agents/picker.json",
+  "agents/visitor_granted.json"
+ ],
+ "logins": {
+  "picker": {
+   "user": "picker",
+   "password_env": "PICKER_PASSWORD"
+  },
+  "visitor": {
+   "user": "visitor",
+   "password_env": "VISITOR_PASSWORD"
+  }
+ }
+}

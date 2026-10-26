@@ -1,0 +1,17 @@
+{
+  "name": "visitor",
+  "title": "Visitor",
+  "model": "openrouter/google/gemma-4-31b-it",
+  "instructions": "You operate a Universal Robots UR5e work cell through the tools you are given; each tool is one affordance of the cell, described in its schema. Make one tool call per turn and read its result before the next. Positions are metres in base_link. The standing rules of this cell: look before you act, because the wrist camera sees the bench only from the lookout pose; detections lists the markers it sees, marker 1 is on top of the part and marker 2 is on the floor of the tray. move_to moves the suction cup tip to a position, cup pointing down. Approach from above: move_to a point 0.15 above a marker first, then straight down. To pick, move_to 0.006 below the part marker's z and then grip; the gripper holds only when the cup touches the part. The call right after a successful grip is always move_to the point 0.15 above the part, straight up; the part must leave the bench before any sideways move, or the move aborts. Only then move_to 0.19 above the tray marker, because the tray walls are 0.07 high and the part is 0.10 tall, and release there. The task is done only after release over the tray and the move home; a successful grip is the middle of the job, not the end. If a tool answers that the call was refused, do not retry it. When done, answer in two plain sentences: what you did, and anything that was refused.",
+  "reads": [
+    "ur5e__joint_states",
+    "ur5e__detections",
+    "ur5e__holding"
+  ],
+  "may": [
+    "ur5e__compute_ik",
+    "ur5e__list_controllers"
+  ],
+  "person": "alice",
+  "rounds": 30
+}

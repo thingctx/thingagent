@@ -1,0 +1,883 @@
+{
+ "@context": "https://www.w3.org/2022/wot/td/v1.1",
+ "id": "urn:dev:ur5e:1",
+ "title": "UR5e",
+ "version": {
+  "instance": "2.0.0"
+ },
+ "description": "A Universal Robots UR5e work cell, reached over rosbridge through the interfaces the real UR driver and MoveIt expose: joint states, a wrist camera with an ArUco marker detector, inverse kinematics, a trajectory action, a suction gripper on the GripperCommand action, and the controller manager. Positions are metres in base_link.",
+ "securityDefinitions": {
+  "nosec_sc": {
+   "scheme": "nosec"
+  }
+ },
+ "security": [
+  "nosec_sc"
+ ],
+ "properties": {
+  "joint_states": {
+   "description": "The six joint positions, velocities and efforts.",
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "position": {
+     "type": "array",
+     "items": {
+      "type": "number"
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/joint_states?type=sensor_msgs/msg/JointState",
+     "op": [
+      "readproperty",
+      "observeproperty"
+     ]
+    }
+   ]
+  },
+  "detections": {
+   "description": "The ArUco markers the wrist camera sees right now, each with its id and its pose in base_link. Marker 1 sits on top of the part, marker 2 on the floor of the tray. Empty when the camera sees none; the bench is in view from the lookout pose.",
+   "type": "object",
+   "properties": {
+    "markers": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "marker_id": {
+        "type": "integer"
+       },
+       "pose": {
+        "type": "object",
+        "properties": {
+         "position": {
+          "type": "object",
+          "properties": {
+           "x": {
+            "type": "number"
+           },
+           "y": {
+            "type": "number"
+           },
+           "z": {
+            "type": "number"
+           }
+          },
+          "required": [
+           "x",
+           "y",
+           "z"
+          ]
+         },
+         "orientation": {
+          "type": "object",
+          "properties": {
+           "x": {
+            "type": "number"
+           },
+           "y": {
+            "type": "number"
+           },
+           "z": {
+            "type": "number"
+           },
+           "w": {
+            "type": "number"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/aruco_detections?type=aruco_opencv_msgs/msg/ArucoDetection",
+     "op": [
+      "readproperty",
+      "observeproperty"
+     ]
+    }
+   ]
+  },
+  "holding": {
+   "description": "What the suction gripper holds: part or nothing.",
+   "type": "object",
+   "properties": {
+    "data": {
+     "type": "string"
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/gripper/holding?type=std_msgs/msg/String",
+     "op": [
+      "readproperty",
+      "observeproperty"
+     ]
+    }
+   ]
+  },
+  "camera": {
+   "description": "The cell camera, a JPEG frame.",
+   "type": "object",
+   "contentMediaType": "image/jpeg",
+   "properties": {
+    "format": {
+     "type": "string"
+    },
+    "data": {
+     "type": "string",
+     "contentEncoding": "base64"
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/cell/camera/compressed?type=sensor_msgs/msg/CompressedImage",
+     "op": [
+      "readproperty",
+      "observeproperty"
+     ]
+    }
+   ]
+  },
+  "wrist_camera": {
+   "description": "The wrist camera, a JPEG frame; what the marker detector sees.",
+   "type": "object",
+   "contentMediaType": "image/jpeg",
+   "properties": {
+    "format": {
+     "type": "string"
+    },
+    "data": {
+     "type": "string",
+     "contentEncoding": "base64"
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/wrist/image/compressed?type=sensor_msgs/msg/CompressedImage",
+     "op": [
+      "readproperty",
+      "observeproperty"
+     ]
+    }
+   ]
+  }
+ },
+ "actions": {
+  "look": {
+   "description": "Move to the lookout pose above the bench, from which the wrist camera sees the whole bench and the tray. About 6 seconds.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "const": {
+     "trajectory": {
+      "joint_names": [
+       "shoulder_pan_joint",
+       "shoulder_lift_joint",
+       "elbow_joint",
+       "wrist_1_joint",
+       "wrist_2_joint",
+       "wrist_3_joint"
+      ],
+      "points": [
+       {
+        "positions": [
+         0.1064,
+         -1.2379,
+         0.2265,
+         -0.5593,
+         -1.5708,
+         -0.4924
+        ],
+        "time_from_start": {
+         "sec": 6,
+         "nanosec": 0
+        }
+       }
+      ]
+     },
+     "goal_tolerance": [
+      {
+       "name": "shoulder_pan_joint",
+       "position": 0.1
+      },
+      {
+       "name": "shoulder_lift_joint",
+       "position": 0.1
+      },
+      {
+       "name": "elbow_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_1_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_2_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_3_joint",
+       "position": 0.1
+      }
+     ],
+     "goal_time_tolerance": {
+      "sec": 2,
+      "nanosec": 0
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/scaled_joint_trajectory_controller/follow_joint_trajectory?type=control_msgs/action/FollowJointTrajectory",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  },
+  "home": {
+   "description": "Move to the home pose, arm folded up and clear of the bench. About 6 seconds.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "const": {
+     "trajectory": {
+      "joint_names": [
+       "shoulder_pan_joint",
+       "shoulder_lift_joint",
+       "elbow_joint",
+       "wrist_1_joint",
+       "wrist_2_joint",
+       "wrist_3_joint"
+      ],
+      "points": [
+       {
+        "positions": [
+         0.0,
+         -1.57,
+         0.0,
+         -1.57,
+         0.0,
+         0.0
+        ],
+        "time_from_start": {
+         "sec": 6,
+         "nanosec": 0
+        }
+       }
+      ]
+     },
+     "goal_tolerance": [
+      {
+       "name": "shoulder_pan_joint",
+       "position": 0.1
+      },
+      {
+       "name": "shoulder_lift_joint",
+       "position": 0.1
+      },
+      {
+       "name": "elbow_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_1_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_2_joint",
+       "position": 0.1
+      },
+      {
+       "name": "wrist_3_joint",
+       "position": 0.1
+      }
+     ],
+     "goal_time_tolerance": {
+      "sec": 2,
+      "nanosec": 0
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/scaled_joint_trajectory_controller/follow_joint_trajectory?type=control_msgs/action/FollowJointTrajectory",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  },
+  "compute_ik": {
+   "description": "Joint positions that put the suction cup tip at a position in base_link with the cup pointing straight down. On success error_code.val is 1 and solution.joint_state holds name and position, in the order move expects.",
+   "input": {
+    "type": "object",
+    "properties": {
+     "ik_request": {
+      "type": "object",
+      "properties": {
+       "group_name": {
+        "const": "ur_manipulator"
+       },
+       "ik_link_name": {
+        "const": "suction_tip"
+       },
+       "avoid_collisions": {
+        "const": true
+       },
+       "timeout": {
+        "const": {
+         "sec": 1,
+         "nanosec": 0
+        }
+       },
+       "pose_stamped": {
+        "type": "object",
+        "properties": {
+         "header": {
+          "type": "object",
+          "default": {},
+          "properties": {
+           "frame_id": {
+            "const": "base_link"
+           }
+          }
+         },
+         "pose": {
+          "type": "object",
+          "properties": {
+           "position": {
+            "type": "object",
+            "properties": {
+             "x": {
+              "type": "number"
+             },
+             "y": {
+              "type": "number"
+             },
+             "z": {
+              "type": "number"
+             }
+            },
+            "required": [
+             "x",
+             "y",
+             "z"
+            ]
+           },
+           "orientation": {
+            "const": {
+             "x": 0.884,
+             "y": -0.467,
+             "z": 0.0,
+             "w": 0.0
+            }
+           }
+          },
+          "required": [
+           "position"
+          ]
+         }
+        },
+        "required": [
+         "pose"
+        ]
+       }
+      },
+      "required": [
+       "pose_stamped"
+      ]
+     }
+    },
+    "required": [
+     "ik_request"
+    ]
+   },
+   "output": {
+    "type": "object",
+    "properties": {
+     "solution": {
+      "type": "object",
+      "properties": {
+       "joint_state": {
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "array",
+          "items": {
+           "type": "string"
+          }
+         },
+         "position": {
+          "type": "array",
+          "items": {
+           "type": "number"
+          }
+         }
+        }
+       }
+      }
+     },
+     "error_code": {
+      "type": "object",
+      "properties": {
+       "val": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/compute_ik?type=moveit_msgs/srv/GetPositionIK"
+    }
+   ]
+  },
+  "move": {
+   "description": "Move the joints to the given positions along a joint space path, in about 5 seconds. Give joint_names and one point with positions, both copied from compute_ik's solution.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "properties": {
+     "trajectory": {
+      "type": "object",
+      "properties": {
+       "joint_names": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "points": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "positions": {
+           "type": "array",
+           "items": {
+            "type": "number"
+           }
+          },
+          "time_from_start": {
+           "type": "object",
+           "default": {
+            "sec": 5,
+            "nanosec": 0
+           },
+           "properties": {
+            "sec": {
+             "type": "integer"
+            },
+            "nanosec": {
+             "type": "integer"
+            }
+           }
+          }
+         },
+         "required": [
+          "positions"
+         ]
+        }
+       }
+      },
+      "required": [
+       "joint_names",
+       "points"
+      ]
+     },
+     "goal_tolerance": {
+      "type": "array",
+      "default": [
+       {
+        "name": "shoulder_pan_joint",
+        "position": 0.1
+       },
+       {
+        "name": "shoulder_lift_joint",
+        "position": 0.1
+       },
+       {
+        "name": "elbow_joint",
+        "position": 0.1
+       },
+       {
+        "name": "wrist_1_joint",
+        "position": 0.1
+       },
+       {
+        "name": "wrist_2_joint",
+        "position": 0.1
+       },
+       {
+        "name": "wrist_3_joint",
+        "position": 0.1
+       }
+      ],
+      "items": {
+       "type": "object",
+       "properties": {
+        "name": {
+         "type": "string"
+        },
+        "position": {
+         "type": "number"
+        }
+       }
+      }
+     },
+     "goal_time_tolerance": {
+      "type": "object",
+      "default": {
+       "sec": 2,
+       "nanosec": 0
+      },
+      "properties": {
+       "sec": {
+        "type": "integer"
+       },
+       "nanosec": {
+        "type": "integer"
+       }
+      }
+     }
+    },
+    "required": [
+     "trajectory"
+    ]
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/scaled_joint_trajectory_controller/follow_joint_trajectory?type=control_msgs/action/FollowJointTrajectory",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  },
+  "grip": {
+   "description": "Close the suction gripper. It holds the part only if the cup is touching it; otherwise the result says stalled and nothing is held.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "const": {
+     "command": {
+      "position": 0.0,
+      "max_effort": 10.0
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/gripper/gripper_cmd?type=control_msgs/action/GripperCommand",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  },
+  "release": {
+   "description": "Open the suction gripper and let go of whatever it holds.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "const": {
+     "command": {
+      "position": 1.0,
+      "max_effort": 0.0
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/gripper/gripper_cmd?type=control_msgs/action/GripperCommand",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  },
+  "list_controllers": {
+   "description": "The ros2_control controllers and their states.",
+   "input": {
+    "type": "object",
+    "properties": {}
+   },
+   "output": {
+    "type": "object",
+    "properties": {
+     "controller": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "name": {
+         "type": "string"
+        },
+        "state": {
+         "type": "string"
+        }
+       }
+      }
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/controller_manager/list_controllers?type=controller_manager_msgs/srv/ListControllers"
+    }
+   ]
+  },
+  "switch_controller": {
+   "description": "Activate or deactivate controllers by name.",
+   "input": {
+    "type": "object",
+    "properties": {
+     "activate_controllers": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "deactivate_controllers": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "strictness": {
+      "type": "integer",
+      "default": 1
+     }
+    }
+   },
+   "output": {
+    "type": "object",
+    "properties": {
+     "ok": {
+      "type": "boolean"
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/controller_manager/switch_controller?type=controller_manager_msgs/srv/SwitchController"
+    }
+   ]
+  },
+  "move_to": {
+   "description": "Move the suction cup tip to a position in base_link, cup pointing down, planned and executed by MoveIt. About 3 to 6 seconds. error_code.val is 1 on success; a negative value means the pose cannot be reached from here.",
+   "synchronous": false,
+   "input": {
+    "type": "object",
+    "properties": {
+     "request": {
+      "type": "object",
+      "properties": {
+       "group_name": {
+        "const": "ur_manipulator"
+       },
+       "pipeline_id": {
+        "const": "pilz_industrial_motion_planner"
+       },
+       "planner_id": {
+        "const": "PTP"
+       },
+       "num_planning_attempts": {
+        "const": 1
+       },
+       "allowed_planning_time": {
+        "const": 5.0
+       },
+       "max_velocity_scaling_factor": {
+        "const": 0.25
+       },
+       "max_acceleration_scaling_factor": {
+        "const": 0.25
+       },
+       "goal_constraints": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 1,
+        "items": {
+         "type": "object",
+         "properties": {
+          "position_constraints": {
+           "type": "array",
+           "minItems": 1,
+           "maxItems": 1,
+           "items": {
+            "type": "object",
+            "properties": {
+             "header": {
+              "const": {
+               "frame_id": "base_link"
+              }
+             },
+             "link_name": {
+              "const": "suction_tip"
+             },
+             "constraint_region": {
+              "type": "object",
+              "properties": {
+               "primitives": {
+                "const": [
+                 {
+                  "type": 2,
+                  "dimensions": [
+                   0.001
+                  ]
+                 }
+                ]
+               },
+               "primitive_poses": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                 "type": "object",
+                 "properties": {
+                  "position": {
+                   "type": "object",
+                   "properties": {
+                    "x": {
+                     "type": "number"
+                    },
+                    "y": {
+                     "type": "number"
+                    },
+                    "z": {
+                     "type": "number"
+                    }
+                   },
+                   "required": [
+                    "x",
+                    "y",
+                    "z"
+                   ]
+                  },
+                  "orientation": {
+                   "const": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0
+                   }
+                  }
+                 },
+                 "required": [
+                  "position"
+                 ]
+                }
+               }
+              },
+              "required": [
+               "primitive_poses"
+              ]
+             },
+             "weight": {
+              "const": 1.0
+             }
+            },
+            "required": [
+             "constraint_region"
+            ]
+           }
+          },
+          "orientation_constraints": {
+           "const": [
+            {
+             "header": {
+              "frame_id": "base_link"
+             },
+             "link_name": "suction_tip",
+             "orientation": {
+              "x": 0.884,
+              "y": -0.467,
+              "z": 0.0,
+              "w": 0.0
+             },
+             "absolute_x_axis_tolerance": 0.01,
+             "absolute_y_axis_tolerance": 0.01,
+             "absolute_z_axis_tolerance": 0.01,
+             "weight": 1.0
+            }
+           ]
+          }
+         },
+         "required": [
+          "position_constraints"
+         ]
+        }
+       }
+      },
+      "required": [
+       "goal_constraints"
+      ]
+     },
+     "planning_options": {
+      "const": {
+       "plan_only": false,
+       "planning_scene_diff": {
+        "is_diff": true,
+        "robot_state": {
+         "is_diff": true
+        }
+       }
+      }
+     }
+    },
+    "required": [
+     "request"
+    ]
+   },
+   "output": {
+    "type": "object",
+    "properties": {
+     "error_code": {
+      "type": "object",
+      "properties": {
+       "val": {
+        "type": "integer"
+       }
+      }
+     }
+    }
+   },
+   "forms": [
+    {
+     "href": "rosbridge://127.0.0.1:9090/move_action?type=moveit_msgs/action/MoveGroup",
+     "op": [
+      "invokeaction",
+      "queryaction",
+      "cancelaction"
+     ]
+    }
+   ]
+  }
+ }
+}

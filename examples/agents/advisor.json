@@ -1,0 +1,10 @@
+{
+  "name": "advisor",
+  "title": "Home advisor",
+  "instructions": "You look after the house. Tell Alice only what needs her attention.",
+  "model": "openrouter/google/gemma-4-31b-it",
+  "reads": [
+    "thermostat__temperature"
+  ],
+  "person": "alice"
+}

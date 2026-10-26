@@ -1,0 +1,5 @@
+{
+  "fleet": ["things"],
+  "agents": ["agents/keeper.json"],
+  "allow": {"alice": ["keeper"]}
+}

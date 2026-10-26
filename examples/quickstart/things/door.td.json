@@ -1,0 +1,14 @@
+{
+  "@context": "https://www.w3.org/2022/wot/td/v1.1",
+  "id": "urn:example:door",
+  "title": "Front door",
+  "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+  "security": ["nosec_sc"],
+  "properties": {
+    "locked": {"type": "boolean", "readOnly": true, "forms": [{"href": "local://locked"}]}
+  },
+  "actions": {
+    "lock": {"output": {"type": "object"}, "forms": [{"href": "local://lock"}]},
+    "unlock": {"output": {"type": "object"}, "forms": [{"href": "local://unlock"}]}
+  }
+}

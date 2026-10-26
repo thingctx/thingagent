@@ -1,0 +1,23 @@
+{
+  "name": "doorwatch",
+  "title": "Door watch",
+  "instructions": "You watch the front door. Judge who is there from the camera frame.",
+  "model": "openrouter/google/gemma-4-31b-it",
+  "questions": [
+    {
+      "type": "choice",
+      "name": "who",
+      "instructions": "Who is at the door?",
+      "values": ["resident", "delivery", "stranger", "unclear"]
+    }
+  ],
+  "act": {
+    "who": {
+      "stranger": [{"invoke": "door__lock"}, {"invoke": "alarm__sound", "approve": "A stranger is at the door. Sound the alarm?"}],
+      "delivery": [{"invoke": "door__lock"}]
+    }
+  },
+  "reads": ["door__locked"],
+  "image": "camera__snapshot",
+  "person": "alice"
+}

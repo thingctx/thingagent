@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thingagent"
+version = "0.1.1"
+description = "Distributed runtime for AI agents in the physical world, governed by policy: which agent, which device, which operation, and within which limits."
+readme = "README-pypi.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "The thingagent Authors" }]
+keywords = ["web of things", "wot", "thing description", "agents", "llm", "iot", "robotics", "mqtt"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Home Automation",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Networking",
+]
+# The minor version must match the thingctx release this one is tested against.
+dependencies = ["thingctx[mqtt,http,authz,model,validate]>=0.3,<0.4"]
+
+[project.urls]
+Homepage = "https://thingctx.com"
+Source = "https://github.com/thingctx/thingagent"
+Issues = "https://github.com/thingctx/thingagent/issues"
+Security = "https://github.com/thingctx/thingagent/security/advisories/new"
+
+[project.optional-dependencies]
+# A real model behind decide and ask; tests use fakes.
+llm = ["thingctx[llm]>=0.3,<0.4"]
+# ROS 2 robots behind rosbridge.
+ros = ["thingctx[ros]>=0.3,<0.4"]
+# thingagent mcp, which serves the fleet to an MCP client as one of its clients.
+mcp = ["thingctx[mcp]>=0.3,<0.4"]
+dev = [
+    "thingctx[mcp,llm]>=0.3,<0.4",
+    "pytest>=7",
+    "pytest-asyncio>=0.21",
+    "pyjwt[crypto]>=2.8",
+    "jsonschema>=4.0",
+    "ruff==0.16.8",
+    "mypy==2.3.1",
+    "vulture==2.14",
+]
+
+[project.scripts]
+thingagent = "thingagent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["network: needs the broker from compose.yaml, or THINGAGENT_TEST_BROKER"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "RET", "PLC0415", "ERA", "T20", "SIM", "C4", "PIE", "RUF", "PTH", "FURB", "ISC", "Q", "N", "A", "PERF", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/thingagent/cli.py" = ["T20"]  # a command prints its output by design
+"tests/**" = ["S101", "S105", "S106", "PLC0415"]
+"examples/**" = ["T20"]  # an example prints what happened
+
+[tool.vulture]
+paths = ["src/thingagent"]
+min_confidence = 80
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/thingagent"]
+strict_optional = true
+warn_unused_ignores = true
+disallow_untyped_defs = true

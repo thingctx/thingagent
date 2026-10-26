@@ -1,0 +1,19 @@
+{
+  "broker": "127.0.0.1:1884",
+  "prefix": "tc",
+  "fleet": "bus",
+  "agents": ["agents/doorwatch.json", "agents/advisor.json"],
+  "rules": ["rules/stranger.json"],
+  "token_env": {
+    "doorwatch": "DOORWATCH_TOKEN",
+    "advisor": "ADVISOR_TOKEN",
+    "person_at_door": "PERSON_AT_DOOR_TOKEN"
+  },
+  "logins": {
+    "doorwatch": {"user": "doorwatch", "password_env": "DOORWATCH_PASSWORD"},
+    "advisor": {"user": "advisor", "password_env": "ADVISOR_PASSWORD"},
+    "person_at_door": {"user": "person_at_door", "password_env": "PERSON_AT_DOOR_PASSWORD"}
+  },
+  "login": {"user": "agents_gw", "password_env": "AGENTS_GW_PASSWORD"},
+  "allow": {"alice": ["doorwatch", "advisor"]}
+}

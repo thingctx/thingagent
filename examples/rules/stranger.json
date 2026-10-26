@@ -1,0 +1,6 @@
+{
+  "name": "person_at_door",
+  "event": "camera__person",
+  "when": {"label": "person"},
+  "calls": "doorwatch__decide"
+}

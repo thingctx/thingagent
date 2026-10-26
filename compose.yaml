@@ -1,0 +1,7 @@
+# The broker the live tests run against, on loopback only:
+#   docker compose up -d && pytest
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.1.2-alpine
+    command: mosquitto -c /mosquitto-no-auth.conf
+    ports: ["127.0.0.1:1884:1883"]
